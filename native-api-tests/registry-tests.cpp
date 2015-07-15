@@ -1,6 +1,7 @@
-#include "stdafx.h"
 #include "CppUnitTest.h"
 #include <stdio.h>
+#include <Windows.h>
+#include <sddl.h>
 #include "ntdll.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -19,8 +20,57 @@ namespace nativeapitests
 	TEST_CLASS( RegistryTests )
 	{
 	public:
-		NtApi nt;
-		const wchar_t* userSid = L"S-1-5-21-1153546953-3807600753-4089874444-1001";
+		static NtApi nt;
+		static wchar_t username[ MAX_PATH + 1 ];
+		static wchar_t userSid[ MAX_PATH + 1 ];
+
+		TEST_CLASS_INITIALIZE( SetUp )
+		{
+			DWORD cchUsername = _countof( username );
+			SID_NAME_USE sidNameUse;
+			PSID pSidBuffer = NULL;
+			DWORD cbSidBuffer = 0;
+			wchar_t* pReferencedDomainName = NULL;
+			DWORD cchReferencedDomainName = 0;
+			wchar_t* pStringSid = NULL;
+
+			__try
+			{
+				Assert::AreNotEqual( FALSE, GetUserName( username, &cchUsername ) );
+
+				Assert::AreEqual( FALSE, LookupAccountName( NULL, username, NULL, &cbSidBuffer, NULL, &cchReferencedDomainName, &sidNameUse ) );
+				Assert::AreEqual( (DWORD) 122, GetLastError() );
+
+				pSidBuffer = new BYTE[ cbSidBuffer ];
+				Assert::IsNotNull( pSidBuffer );
+
+				pReferencedDomainName = new wchar_t[ cchReferencedDomainName ];
+				Assert::IsNotNull( pReferencedDomainName );
+
+				Assert::AreNotEqual( FALSE, LookupAccountName( NULL, username, pSidBuffer, &cbSidBuffer, pReferencedDomainName, &cchReferencedDomainName, &sidNameUse ) );
+
+				Assert::AreNotEqual( FALSE, ConvertSidToStringSid( pSidBuffer, &pStringSid ) );
+
+				wcscpy_s( userSid, pStringSid );
+			}
+			__finally
+			{
+				if ( pStringSid )
+				{
+					LocalFree( pStringSid );
+				}
+
+				if ( pReferencedDomainName )
+				{
+					delete[] pReferencedDomainName;
+				}
+				
+				if ( pSidBuffer )
+				{
+					delete[] pSidBuffer;
+				}
+			}
+		}
 
 		TEST_METHOD( ClosingInvalidHandleReturnsError1 )
 		{
@@ -83,4 +133,8 @@ namespace nativeapitests
 			}
 		}
 	};
+
+	NtApi RegistryTests::nt;
+	wchar_t RegistryTests::username[ MAX_PATH + 1 ];
+	wchar_t RegistryTests::userSid[ MAX_PATH + 1 ];
 }
