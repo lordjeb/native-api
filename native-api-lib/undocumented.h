@@ -87,11 +87,11 @@ typedef enum _KEY_VALUE_INFORMATION_CLASS {
 
 namespace NT
 {
-	typedef enum _OBJECT_INFORMATION_CLASS {
-		ObjectBasicInformation,
-		ObjectNameInformation,
-		ObjectTypeInformation,
-		ObjectAllInformation,
-		ObjectDataInformation
-	} OBJECT_INFORMATION_CLASS, *POBJECT_INFORMATION_CLASS;
+    typedef enum _OBJECT_INFORMATION_CLASS {
+        ObjectBasicInformation,
+        ObjectNameInformation,
+        ObjectTypeInformation,
+        ObjectAllInformation,
+        ObjectDataInformation
+    } OBJECT_INFORMATION_CLASS, *POBJECT_INFORMATION_CLASS;
 }

@@ -28,17 +28,17 @@ namespace nativeapitests
 		{
 			DWORD cchUsername = _countof( username );
 			SID_NAME_USE sidNameUse;
-			PSID pSidBuffer = NULL;
+			PSID pSidBuffer = nullptr;
 			DWORD cbSidBuffer = 0;
-			wchar_t* pReferencedDomainName = NULL;
+			wchar_t* pReferencedDomainName = nullptr;
 			DWORD cchReferencedDomainName = 0;
-			wchar_t* pStringSid = NULL;
+			wchar_t* pStringSid = nullptr;
 
 			__try
 			{
 				Assert::AreNotEqual( FALSE, GetUserName( username, &cchUsername ) );
 
-				Assert::AreEqual( FALSE, LookupAccountName( NULL, username, NULL, &cbSidBuffer, NULL, &cchReferencedDomainName, &sidNameUse ) );
+				Assert::AreEqual( FALSE, LookupAccountName(nullptr, username, nullptr, &cbSidBuffer, nullptr, &cchReferencedDomainName, &sidNameUse ) );
 				Assert::AreEqual( (DWORD) 122, GetLastError() );
 
 				pSidBuffer = new BYTE[ cbSidBuffer ];
@@ -47,7 +47,7 @@ namespace nativeapitests
 				pReferencedDomainName = new wchar_t[ cchReferencedDomainName ];
 				Assert::IsNotNull( pReferencedDomainName );
 
-				Assert::AreNotEqual( FALSE, LookupAccountName( NULL, username, pSidBuffer, &cbSidBuffer, pReferencedDomainName, &cchReferencedDomainName, &sidNameUse ) );
+				Assert::AreNotEqual( FALSE, LookupAccountName(nullptr, username, pSidBuffer, &cbSidBuffer, pReferencedDomainName, &cchReferencedDomainName, &sidNameUse ) );
 
 				Assert::AreNotEqual( FALSE, ConvertSidToStringSid( pSidBuffer, &pStringSid ) );
 
@@ -72,22 +72,22 @@ namespace nativeapitests
 			}
 		}
 
-		TEST_METHOD( ClosingInvalidHandleReturnsError1 )
+		TEST_METHOD( ClosingInvalidHandleReturnsSuccess )
 		{
 			HANDLE hTest = INVALID_HANDLE_VALUE;
-			Assert::AreEqual( STATUS_INVALID_HANDLE, nt.NtClose( hTest ) );
+			Assert::AreEqual( STATUS_SUCCESS, nt.NtClose( hTest ) );
 		}
 
-		TEST_METHOD( ClosingInvalidHandleReturnsError2 )
+		TEST_METHOD( ClosingNullHandleReturnsError )
 		{
-			HANDLE hTest = 0L;
+			HANDLE hTest = nullptr;
 			Assert::AreEqual( STATUS_INVALID_HANDLE, nt.NtClose( hTest ) );
 		}
 
 		TEST_METHOD( OpenKeySucceeds )
 		{
 			UNICODE_STRING keyName = RTL_CONSTANT_STRING( L"\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft" );
-			OBJECT_ATTRIBUTES oa = RTL_CONSTANT_OBJECT_ATTRIBUTES( 0L, &keyName, OBJ_CASE_INSENSITIVE );
+			OBJECT_ATTRIBUTES oa = RTL_CONSTANT_OBJECT_ATTRIBUTES( nullptr, &keyName, OBJ_CASE_INSENSITIVE );
 			HANDLE hKey;
 			Assert::AreEqual( STATUS_SUCCESS, nt.NtOpenKey( &hKey, KEY_READ, &oa ) );
 			Assert::AreEqual( STATUS_SUCCESS, nt.NtClose( hKey ) );
@@ -96,7 +96,7 @@ namespace nativeapitests
 		TEST_METHOD( OpenKeyExFailsWhenBackupPrivilegeNotEnabled )
 		{
 			UNICODE_STRING keyName = RTL_CONSTANT_STRING( L"\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft" );
-			OBJECT_ATTRIBUTES oa = RTL_CONSTANT_OBJECT_ATTRIBUTES( 0L, &keyName, OBJ_CASE_INSENSITIVE );
+			OBJECT_ATTRIBUTES oa = RTL_CONSTANT_OBJECT_ATTRIBUTES( nullptr, &keyName, OBJ_CASE_INSENSITIVE );
 			HANDLE hKey;
 			Assert::AreEqual( STATUS_ACCESS_DENIED, nt.NtOpenKeyEx( &hKey, KEY_READ, &oa, REG_OPTION_BACKUP_RESTORE ) );
 		}
@@ -106,7 +106,7 @@ namespace nativeapitests
 			wchar_t keyName[ MAX_PATH ];
 			swprintf_s( keyName, L"\\REGISTRY\\USER\\%s\\Software\\NativeApiLibTests", userSid );
 			UNICODE_STRING KeyName = RTL_CONSTANT_STRING( keyName );
-			OBJECT_ATTRIBUTES oa = RTL_CONSTANT_OBJECT_ATTRIBUTES( 0L, &KeyName, OBJ_CASE_INSENSITIVE );
+			OBJECT_ATTRIBUTES oa = RTL_CONSTANT_OBJECT_ATTRIBUTES( nullptr, &KeyName, OBJ_CASE_INSENSITIVE );
 			HANDLE hKey;
 			ULONG ulDisposition;
 			Assert::AreEqual( STATUS_SUCCESS, nt.NtCreateKey( &hKey, KEY_ALL_ACCESS, &oa, 0, nullptr, REG_OPTION_VOLATILE, &ulDisposition ) );
@@ -114,9 +114,9 @@ namespace nativeapitests
 
 			__try
 			{
-				HANDLE hEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
+				HANDLE hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr );
 				IO_STATUS_BLOCK iosb;
-				Assert::AreEqual( STATUS_PENDING, nt.NtNotifyChangeKey( hKey, NULL, (PIO_APC_ROUTINE)ApcRoutine, &hEvent, &iosb, REG_NOTIFY_CHANGE_NAME | REG_NOTIFY_CHANGE_LAST_SET, TRUE, NULL, 0, TRUE ) );
+				Assert::AreEqual( STATUS_PENDING, nt.NtNotifyChangeKey( hKey, nullptr, (PIO_APC_ROUTINE)ApcRoutine, &hEvent, &iosb, REG_NOTIFY_CHANGE_NAME | REG_NOTIFY_CHANGE_LAST_SET, TRUE, nullptr, 0, TRUE ) );
 
 				UNICODE_STRING ValueName = RTL_CONSTANT_STRING( L"TestValue" );
 				Assert::AreEqual( STATUS_SUCCESS, nt.NtSetValueKey( hKey, &ValueName, 0, REG_SZ, ValueName.Buffer, ValueName.Length + sizeof( wchar_t ) ) );

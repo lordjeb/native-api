@@ -27,7 +27,7 @@ public:
 
 	NTSTATUS NTAPI NtClose(
 		__in HANDLE Handle
-		);
+		) const;
 
 	NTSTATUS NTAPI NtCreateFile(
 		__out PHANDLE FileHandle,
@@ -41,7 +41,7 @@ public:
 		__in ULONG CreateOptions,
 		__in PVOID EaBuffer,
 		__in ULONG EaLength
-		);
+		) const;
 
 	NTSTATUS NTAPI NtCreateKey(
 		__out PHANDLE KeyHandle,
@@ -51,7 +51,7 @@ public:
 		__in_opt PUNICODE_STRING Class,
 		__in ULONG CreateOptions,
 		__out_opt PULONG Disposition
-		);
+		) const;
 
 	NTSTATUS NTAPI NtCreateKeyTransacted(
 		__out PHANDLE KeyHandle,
@@ -62,16 +62,16 @@ public:
 		__in ULONG CreateOptions,
 		__in HANDLE TransactionHandle,
 		__out_opt PULONG Disposition
-		);
+		) const;
 
 	NTSTATUS NTAPI NtDeleteKey(
 		__in HANDLE KeyHandle
-		);
+		) const;
 
 	NTSTATUS NTAPI NtDeleteValueKey(
 		__in HANDLE KeyHandle,
 		__in PUNICODE_STRING ValueName
-		);
+		) const;
 
 	NTSTATUS NTAPI NtEnumerateKey(
 		__in HANDLE KeyHandle,
@@ -80,7 +80,7 @@ public:
 		__out_opt PVOID KeyInformation,
 		__in ULONG Length,
 		__out PULONG ResultLength
-		);
+		) const;
 
 	NTSTATUS NTAPI NtEnumerateValueKey(
 		__in HANDLE KeyHandle,
@@ -89,11 +89,11 @@ public:
 		__out_opt PVOID KeyValueInformation,
 		__in ULONG Length,
 		__out PULONG ResultLength
-		);
+		) const;
 
 	NTSTATUS NTAPI NtFlushKey(
 		__in HANDLE KeyHandle
-		);
+		) const;
 
 	NTSTATUS NTAPI NtNotifyChangeKey(
 		__in HANDLE KeyHandle,
@@ -106,7 +106,7 @@ public:
 		__out_opt PVOID Buffer,
 		__in ULONG BufferSize,
 		__in BOOLEAN Asynchronous
-		);
+		) const;
 
 	NTSTATUS NTAPI NtOpenFile(
 		__out PHANDLE FileHandle,
@@ -115,27 +115,27 @@ public:
 		__out PIO_STATUS_BLOCK IoStatusBlock,
 		__in ULONG ShareAccess,
 		__in ULONG OpenOptions
-		);
+		) const;
 
 	NTSTATUS NTAPI NtOpenKey(
 		__out PHANDLE KeyHandle,
 		__in ACCESS_MASK DesiredAccess,
 		__in POBJECT_ATTRIBUTES ObjectAttributes
-		);
+		) const;
 
 	NTSTATUS NTAPI NtOpenKeyEx(
 		__out PHANDLE KeyHandle,
 		__in ACCESS_MASK DesiredAccess,
 		__in POBJECT_ATTRIBUTES ObjectAttributes,
 		__in ULONG OpenOptions
-		);
+		) const;
 
 	NTSTATUS NTAPI NtOpenKeyTransacted(
 		__out PHANDLE KeyHandle,
 		__in ACCESS_MASK DesiredAccess,
 		__in POBJECT_ATTRIBUTES ObjectAttributes,
 		__in HANDLE TransactionHandle
-		);
+		) const;
 
 	NTSTATUS NTAPI NtOpenKeyTransactedEx(
 		__out PHANDLE KeyHandle,
@@ -143,7 +143,7 @@ public:
 		__in POBJECT_ATTRIBUTES ObjectAttributes,
 		__in ULONG OpenOptions,
 		__in HANDLE TransactionHandle
-		);
+		) const;
 
 	NTSTATUS NTAPI NtQueryKey(
 		__in HANDLE KeyHandle,
@@ -151,7 +151,7 @@ public:
 		__out_opt PVOID KeyInformation,
 		__in ULONG Length,
 		__out PULONG ResultLength
-		);
+		) const;
 
 	NTSTATUS NTAPI NtQueryObject(
 		__in_opt HANDLE Handle,
@@ -159,7 +159,7 @@ public:
 		__out_opt PVOID ObjectInformation,
 		__in ULONG ObjectInformationLength,
 		__out_opt PULONG ReturnLength
-		);
+		) const;
 
 	NTSTATUS NTAPI NtQueryValueKey(
 		__in HANDLE KeyHandle,
@@ -168,7 +168,7 @@ public:
 		__out_opt PVOID KeyValueInformation,
 		__in ULONG Length,
 		__out PULONG ResultLength
-		);
+		) const;
 
 	NTSTATUS NTAPI NtSetValueKey(
 		__in HANDLE KeyHandle,
@@ -177,7 +177,7 @@ public:
 		__in ULONG Type,
 		__in_opt PVOID Data,
 		__in ULONG DataSize
-		);
+		) const;
 
 private:
 	HMODULE m_hLib;
