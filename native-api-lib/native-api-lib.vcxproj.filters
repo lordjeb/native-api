@@ -29,5 +29,8 @@
     <ClInclude Include="function_pointer_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="handle.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

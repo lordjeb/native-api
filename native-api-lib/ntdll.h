@@ -19,185 +19,195 @@
 #endif
 
 
-class NtApi
+namespace Nt
 {
-public:
-	NtApi();
-	virtual ~NtApi();
 
-	NTSTATUS NTAPI NtClose(
-		__in HANDLE Handle
-		) const;
+    class NtApi
+    {
+    public:
+        NtApi();
+        virtual ~NtApi();
 
-	NTSTATUS NTAPI NtCreateFile(
-		__out PHANDLE FileHandle,
-		__in ACCESS_MASK DesiredAccess,
-		__in POBJECT_ATTRIBUTES ObjectAttributes,
-		__out PIO_STATUS_BLOCK IoStatusBlock,
-		__in_opt PLARGE_INTEGER AllocationSize,
-		__in ULONG FileAttributes,
-		__in ULONG ShareAccess,
-		__in ULONG CreateDisposition,
-		__in ULONG CreateOptions,
-		__in PVOID EaBuffer,
-		__in ULONG EaLength
-		) const;
+        NTSTATUS NTAPI NtClose(
+            _In_ HANDLE Handle
+        ) const;
 
-	NTSTATUS NTAPI NtCreateKey(
-		__out PHANDLE KeyHandle,
-		__in ACCESS_MASK DesiredAccess,
-		__in POBJECT_ATTRIBUTES ObjectAttributes,
-		__in ULONG TitleIndex,
-		__in_opt PUNICODE_STRING Class,
-		__in ULONG CreateOptions,
-		__out_opt PULONG Disposition
-		) const;
+        NTSTATUS NTAPI NtCreateFile(
+            _Out_ PHANDLE FileHandle,
+            _In_ ACCESS_MASK DesiredAccess,
+            _In_ POBJECT_ATTRIBUTES ObjectAttributes,
+            _Out_ PIO_STATUS_BLOCK IoStatusBlock,
+            _In_opt_ PLARGE_INTEGER AllocationSize,
+            _In_ ULONG FileAttributes,
+            _In_ ULONG ShareAccess,
+            _In_ ULONG CreateDisposition,
+            _In_ ULONG CreateOptions,
+            _In_ PVOID EaBuffer,
+            _In_ ULONG EaLength
+        ) const;
 
-	NTSTATUS NTAPI NtCreateKeyTransacted(
-		__out PHANDLE KeyHandle,
-		__in ACCESS_MASK DesiredAccess,
-		__in POBJECT_ATTRIBUTES ObjectAttributes,
-		__in ULONG TitleIndex,
-		__in_opt PUNICODE_STRING Class,
-		__in ULONG CreateOptions,
-		__in HANDLE TransactionHandle,
-		__out_opt PULONG Disposition
-		) const;
+        NTSTATUS NTAPI NtCreateKey(
+            _Out_ PHANDLE KeyHandle,
+            _In_ ACCESS_MASK DesiredAccess,
+            _In_ POBJECT_ATTRIBUTES ObjectAttributes,
+            _In_ ULONG TitleIndex,
+            _In_opt_ PUNICODE_STRING Class,
+            _In_ ULONG CreateOptions,
+            _Out_opt_ PULONG Disposition
+        ) const;
 
-	NTSTATUS NTAPI NtDeleteKey(
-		__in HANDLE KeyHandle
-		) const;
+        NTSTATUS NTAPI NtCreateKeyTransacted(
+            _Out_ PHANDLE KeyHandle,
+            _In_ ACCESS_MASK DesiredAccess,
+            _In_ POBJECT_ATTRIBUTES ObjectAttributes,
+            _In_ ULONG TitleIndex,
+            _In_opt_ PUNICODE_STRING Class,
+            _In_ ULONG CreateOptions,
+            _In_ HANDLE TransactionHandle,
+            _Out_opt_ PULONG Disposition
+        ) const;
 
-	NTSTATUS NTAPI NtDeleteValueKey(
-		__in HANDLE KeyHandle,
-		__in PUNICODE_STRING ValueName
-		) const;
+        NTSTATUS NTAPI NtDeleteKey(
+            _In_ HANDLE KeyHandle
+        ) const;
 
-	NTSTATUS NTAPI NtEnumerateKey(
-		__in HANDLE KeyHandle,
-		__in ULONG Index,
-		__in KEY_INFORMATION_CLASS KeyInformationClass,
-		__out_opt PVOID KeyInformation,
-		__in ULONG Length,
-		__out PULONG ResultLength
-		) const;
+        NTSTATUS NTAPI NtDeleteValueKey(
+            _In_ HANDLE KeyHandle,
+            _In_ PUNICODE_STRING ValueName
+        ) const;
 
-	NTSTATUS NTAPI NtEnumerateValueKey(
-		__in HANDLE KeyHandle,
-		__in ULONG Index,
-		__in KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
-		__out_opt PVOID KeyValueInformation,
-		__in ULONG Length,
-		__out PULONG ResultLength
-		) const;
+        NTSTATUS NTAPI NtEnumerateKey(
+            _In_ HANDLE KeyHandle,
+            _In_ ULONG Index,
+            _In_ KEY_INFORMATION_CLASS KeyInformationClass,
+            _Out_opt_ PVOID KeyInformation,
+            _In_ ULONG Length,
+            _Out_ PULONG ResultLength
+        ) const;
 
-	NTSTATUS NTAPI NtFlushKey(
-		__in HANDLE KeyHandle
-		) const;
+        NTSTATUS NTAPI NtEnumerateValueKey(
+            _In_ HANDLE KeyHandle,
+            _In_ ULONG Index,
+            _In_ KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
+            _Out_opt_ PVOID KeyValueInformation,
+            _In_ ULONG Length,
+            _Out_ PULONG ResultLength
+        ) const;
 
-	NTSTATUS NTAPI NtNotifyChangeKey(
-		__in HANDLE KeyHandle,
-		__in_opt HANDLE Event,
-		__in_opt PIO_APC_ROUTINE ApcRoutine,
-		__in_opt PVOID ApcContext,
-		__out PIO_STATUS_BLOCK IoStatusBlock,
-		__in ULONG CompletionFilter,
-		__in BOOLEAN WatchTree,
-		__out_opt PVOID Buffer,
-		__in ULONG BufferSize,
-		__in BOOLEAN Asynchronous
-		) const;
+        NTSTATUS NTAPI NtFlushKey(
+            _In_ HANDLE KeyHandle
+        ) const;
 
-	NTSTATUS NTAPI NtOpenFile(
-		__out PHANDLE FileHandle,
-		__in ACCESS_MASK DesiredAccess,
-		__in POBJECT_ATTRIBUTES ObjectAttributes,
-		__out PIO_STATUS_BLOCK IoStatusBlock,
-		__in ULONG ShareAccess,
-		__in ULONG OpenOptions
-		) const;
+        NTSTATUS NTAPI NtNotifyChangeKey(
+            _In_ HANDLE KeyHandle,
+            _In_opt_ HANDLE Event,
+            _In_opt_ PIO_APC_ROUTINE ApcRoutine,
+            _In_opt_ PVOID ApcContext,
+            _Out_ PIO_STATUS_BLOCK IoStatusBlock,
+            _In_ ULONG CompletionFilter,
+            _In_ BOOLEAN WatchTree,
+            _Out_opt_ PVOID Buffer,
+            _In_ ULONG BufferSize,
+            _In_ BOOLEAN Asynchronous
+        ) const;
 
-	NTSTATUS NTAPI NtOpenKey(
-		__out PHANDLE KeyHandle,
-		__in ACCESS_MASK DesiredAccess,
-		__in POBJECT_ATTRIBUTES ObjectAttributes
-		) const;
+        NTSTATUS NTAPI NtOpenFile(
+            _Out_ PHANDLE FileHandle,
+            _In_ ACCESS_MASK DesiredAccess,
+            _In_ POBJECT_ATTRIBUTES ObjectAttributes,
+            _Out_ PIO_STATUS_BLOCK IoStatusBlock,
+            _In_ ULONG ShareAccess,
+            _In_ ULONG OpenOptions
+        ) const;
 
-	NTSTATUS NTAPI NtOpenKeyEx(
-		__out PHANDLE KeyHandle,
-		__in ACCESS_MASK DesiredAccess,
-		__in POBJECT_ATTRIBUTES ObjectAttributes,
-		__in ULONG OpenOptions
-		) const;
+        NTSTATUS NTAPI NtOpenKey(
+            _Out_ PHANDLE KeyHandle,
+            _In_ ACCESS_MASK DesiredAccess,
+            _In_ POBJECT_ATTRIBUTES ObjectAttributes
+        ) const;
 
-	NTSTATUS NTAPI NtOpenKeyTransacted(
-		__out PHANDLE KeyHandle,
-		__in ACCESS_MASK DesiredAccess,
-		__in POBJECT_ATTRIBUTES ObjectAttributes,
-		__in HANDLE TransactionHandle
-		) const;
+        NTSTATUS NTAPI NtOpenKeyEx(
+            _Out_ PHANDLE KeyHandle,
+            _In_ ACCESS_MASK DesiredAccess,
+            _In_ POBJECT_ATTRIBUTES ObjectAttributes,
+            _In_ ULONG OpenOptions
+        ) const;
 
-	NTSTATUS NTAPI NtOpenKeyTransactedEx(
-		__out PHANDLE KeyHandle,
-		__in ACCESS_MASK DesiredAccess,
-		__in POBJECT_ATTRIBUTES ObjectAttributes,
-		__in ULONG OpenOptions,
-		__in HANDLE TransactionHandle
-		) const;
+        NTSTATUS NTAPI NtOpenKeyTransacted(
+            _Out_ PHANDLE KeyHandle,
+            _In_ ACCESS_MASK DesiredAccess,
+            _In_ POBJECT_ATTRIBUTES ObjectAttributes,
+            _In_ HANDLE TransactionHandle
+        ) const;
 
-	NTSTATUS NTAPI NtQueryKey(
-		__in HANDLE KeyHandle,
-		__in KEY_INFORMATION_CLASS KeyInformationClass,
-		__out_opt PVOID KeyInformation,
-		__in ULONG Length,
-		__out PULONG ResultLength
-		) const;
+        NTSTATUS NTAPI NtOpenKeyTransactedEx(
+            _Out_ PHANDLE KeyHandle,
+            _In_ ACCESS_MASK DesiredAccess,
+            _In_ POBJECT_ATTRIBUTES ObjectAttributes,
+            _In_ ULONG OpenOptions,
+            _In_ HANDLE TransactionHandle
+        ) const;
 
-	NTSTATUS NTAPI NtQueryObject(
-		__in_opt HANDLE Handle,
-		__in OBJECT_INFORMATION_CLASS ObjectInformationClass,
-		__out_opt PVOID ObjectInformation,
-		__in ULONG ObjectInformationLength,
-		__out_opt PULONG ReturnLength
-		) const;
+        NTSTATUS NTAPI NtQueryKey(
+            _In_ HANDLE KeyHandle,
+            _In_ KEY_INFORMATION_CLASS KeyInformationClass,
+            _Out_opt_ PVOID KeyInformation,
+            _In_ ULONG Length,
+            _Out_ PULONG ResultLength
+        ) const;
 
-	NTSTATUS NTAPI NtQueryValueKey(
-		__in HANDLE KeyHandle,
-		__in PUNICODE_STRING ValueName,
-		__in KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
-		__out_opt PVOID KeyValueInformation,
-		__in ULONG Length,
-		__out PULONG ResultLength
-		) const;
+        NTSTATUS NTAPI NtQueryObject(
+            _In_opt_ HANDLE Handle,
+            _In_ OBJECT_INFORMATION_CLASS ObjectInformationClass,
+            _Out_opt_ PVOID ObjectInformation,
+            _In_ ULONG ObjectInformationLength,
+            _Out_opt_ PULONG ReturnLength
+        ) const;
 
-	NTSTATUS NTAPI NtSetValueKey(
-		__in HANDLE KeyHandle,
-		__in PUNICODE_STRING ValueName,
-		__in_opt ULONG TitleIndex,
-		__in ULONG Type,
-		__in_opt PVOID Data,
-		__in ULONG DataSize
-		) const;
+        NTSTATUS NTAPI NtQueryValueKey(
+            _In_ HANDLE KeyHandle,
+            _In_ PUNICODE_STRING ValueName,
+            _In_ KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
+            _Out_opt_ PVOID KeyValueInformation,
+            _In_ ULONG Length,
+            _Out_ PULONG ResultLength
+        ) const;
 
-private:
-	HMODULE m_hLib;
-	PFN_NtClose m_pfnNtClose;
-	PFN_NtCreateFile m_pfnNtCreateFile;
-	PFN_NtCreateKey m_pfnNtCreateKey;
-	PFN_NtCreateKeyTransacted m_pfnNtCreateKeyTransacted;
-	PFN_NtDeleteKey m_pfnNtDeleteKey;
-	PFN_NtDeleteValueKey m_pfnNtDeleteValueKey;
-	PFN_NtEnumerateKey m_pfnNtEnumerateKey;
-	PFN_NtEnumerateValueKey m_pfnNtEnumerateValueKey;
-	PFN_NtFlushKey m_pfnNtFlushKey;
-	PFN_NtNotifyChangeKey m_pfnNtNotifyChangeKey;
-	PFN_NtOpenFile m_pfnNtOpenFile;
-	PFN_NtOpenKey m_pfnNtOpenKey;
-	PFN_NtOpenKeyEx m_pfnNtOpenKeyEx;
-	PFN_NtOpenKeyTransacted m_pfnNtOpenKeyTransacted;
-	PFN_NtOpenKeyTransactedEx m_pfnNtOpenKeyTransactedEx;
-	PFN_NtQueryKey m_pfnNtQueryKey;
-	PFN_NtQueryObject m_pfnNtQueryObject;
-	PFN_NtQueryValueKey m_pfnNtQueryValueKey;
-	PFN_NtSetValueKey m_pfnNtSetValueKey;
-};
+        NTSTATUS NTAPI NtSetValueKey(
+            _In_ HANDLE KeyHandle,
+            _In_ PUNICODE_STRING ValueName,
+            _In_opt_ ULONG TitleIndex,
+            _In_ ULONG Type,
+            _In_opt_ PVOID Data,
+            _In_ ULONG DataSize
+        ) const;
+
+        VOID NTAPI RtlInitUnicodeString(
+            _In_ PUNICODE_STRING DestinationString,
+            _In_ PCWSTR SourceString
+        ) const;
+
+    private:
+        HMODULE m_hLib;
+        PFN_NtClose m_pfnNtClose;
+        PFN_NtCreateFile m_pfnNtCreateFile;
+        PFN_NtCreateKey m_pfnNtCreateKey;
+        PFN_NtCreateKeyTransacted m_pfnNtCreateKeyTransacted;
+        PFN_NtDeleteKey m_pfnNtDeleteKey;
+        PFN_NtDeleteValueKey m_pfnNtDeleteValueKey;
+        PFN_NtEnumerateKey m_pfnNtEnumerateKey;
+        PFN_NtEnumerateValueKey m_pfnNtEnumerateValueKey;
+        PFN_NtFlushKey m_pfnNtFlushKey;
+        PFN_NtNotifyChangeKey m_pfnNtNotifyChangeKey;
+        PFN_NtOpenFile m_pfnNtOpenFile;
+        PFN_NtOpenKey m_pfnNtOpenKey;
+        PFN_NtOpenKeyEx m_pfnNtOpenKeyEx;
+        PFN_NtOpenKeyTransacted m_pfnNtOpenKeyTransacted;
+        PFN_NtOpenKeyTransactedEx m_pfnNtOpenKeyTransactedEx;
+        PFN_NtQueryKey m_pfnNtQueryKey;
+        PFN_NtQueryObject m_pfnNtQueryObject;
+        PFN_NtQueryValueKey m_pfnNtQueryValueKey;
+        PFN_NtSetValueKey m_pfnNtSetValueKey;
+        PFN_RtlInitUnicodeString m_pfnRtlInitUnicodeString;
+    };
+}

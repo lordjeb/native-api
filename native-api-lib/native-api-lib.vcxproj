@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="function_pointer_types.h" />
+    <ClInclude Include="handle.hpp" />
     <ClInclude Include="ntdll.h" />
     <ClInclude Include="undocumented.h" />
   </ItemGroup>
