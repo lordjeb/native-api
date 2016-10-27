@@ -5,7 +5,6 @@
 #include <sddl.h>
 #include "ntdll.h"
 #include "handle.hpp"
-#include <memory>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -52,9 +51,11 @@ namespace nativeapitests
 
         TEST_METHOD_INITIALIZE(TestMethodSetUp)
         {
+            // Create registry key for testing
             _keyName = L"\\REGISTRY\\USER\\" + _userSid + L"\\Software\\NativeApiLibTests";
             _nt.RtlInitUnicodeString(&_KeyName, _keyName.c_str());
             InitializeObjectAttributes(&_KeyObjectAttributes, &_KeyName, OBJ_CASE_INSENSITIVE, nullptr, nullptr);
+
             ULONG ulDisposition;
             Nt::unique_nt_handle keyHandle;
             Assert::AreEqual(STATUS_SUCCESS, _nt.NtCreateKey(keyHandle.get_address_of(), KEY_ALL_ACCESS, &_KeyObjectAttributes, 0, nullptr, REG_OPTION_VOLATILE, &ulDisposition));
@@ -91,7 +92,7 @@ namespace nativeapitests
             Assert::AreEqual(STATUS_ACCESS_DENIED, _nt.NtOpenKeyEx(keyHandle.get_address_of(), KEY_READ, &_KeyObjectAttributes, REG_OPTION_BACKUP_RESTORE));
         }
 
-        TEST_METHOD(RegistryValueOperations)
+        TEST_METHOD(ValueOperations)
         {
             unsigned long bufferSize = 256;
 
@@ -109,6 +110,7 @@ namespace nativeapitests
             ULONG cbInformation;
             Assert::AreEqual(STATUS_SUCCESS, _nt.NtQueryValueKey(keyHandle.get(), &valueName, Nt::KeyValueFullInformation, pValueFullInformation, bufferSize, &cbInformation));
             Assert::AreEqual(ULONG(REG_DWORD), pValueFullInformation->Type);
+            Assert::AreEqual(ULONG(sizeof(DWORD)), pValueFullInformation->DataLength);
 
             // Enum
             Assert::AreEqual(STATUS_SUCCESS, _nt.NtEnumerateValueKey(keyHandle.get(), 0, Nt::KeyValueFullInformation, pValueFullInformation, bufferSize, &cbInformation));
@@ -121,7 +123,7 @@ namespace nativeapitests
             Assert::AreEqual(STATUS_SUCCESS, _nt.NtDeleteValueKey(keyHandle.get(), &valueName));
         }
 
-        TEST_METHOD(NotifyTester)
+        TEST_METHOD(ChangeNotifications)
         {
             Nt::unique_nt_handle keyHandle;
             Assert::AreEqual(STATUS_SUCCESS, _nt.NtOpenKey(keyHandle.get_address_of(), KEY_ALL_ACCESS, &_KeyObjectAttributes));

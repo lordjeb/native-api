@@ -18,6 +18,9 @@
     <ClCompile Include="ntdll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="handle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ntdll.h">

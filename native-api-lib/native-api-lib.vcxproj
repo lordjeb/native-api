@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="handle.cpp" />
     <ClCompile Include="ntdll.cpp" />
   </ItemGroup>
   <ItemGroup>

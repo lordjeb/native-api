@@ -28,25 +28,26 @@ namespace Nt
     {
         m_hLib = LoadLibraryW(L"ntdll.dll");
 
-        m_pfnNtClose = (PFN_NtClose)GetProcAddress(m_hLib, "NtClose");
-        m_pfnNtCreateFile = (PFN_NtCreateFile)GetProcAddress(m_hLib, "NtCreateFile");
-        m_pfnNtCreateKey = (PFN_NtCreateKey)GetProcAddress(m_hLib, "NtCreateKey");
-        m_pfnNtCreateKeyTransacted = (PFN_NtCreateKeyTransacted)GetProcAddress(m_hLib, "NtCreateKeyTransacted");
-        m_pfnNtDeleteKey = (PFN_NtDeleteKey)GetProcAddress(m_hLib, "NtDeleteKey");
-        m_pfnNtDeleteValueKey = (PFN_NtDeleteValueKey)GetProcAddress(m_hLib, "NtDeleteValueKey");
-        m_pfnNtEnumerateKey = (PFN_NtEnumerateKey)GetProcAddress(m_hLib, "NtEnumerateKey");
-        m_pfnNtEnumerateValueKey = (PFN_NtEnumerateValueKey)GetProcAddress(m_hLib, "NtEnumerateValueKey");
-        m_pfnNtFlushKey = (PFN_NtFlushKey)GetProcAddress(m_hLib, "NtFlushKey");
-        m_pfnNtNotifyChangeKey = (PFN_NtNotifyChangeKey)GetProcAddress(m_hLib, "NtNotifyChangeKey");
-        m_pfnNtOpenFile = (PFN_NtOpenFile)GetProcAddress(m_hLib, "NtOpenFile");
-        m_pfnNtOpenKey = (PFN_NtOpenKey)GetProcAddress(m_hLib, "NtOpenKey");
-        m_pfnNtOpenKeyEx = (PFN_NtOpenKeyEx)GetProcAddress(m_hLib, "NtOpenKeyEx");
-        m_pfnNtOpenKeyTransacted = (PFN_NtOpenKeyTransacted)GetProcAddress(m_hLib, "NtOpenKeyTransacted");
-        m_pfnNtOpenKeyTransactedEx = (PFN_NtOpenKeyTransactedEx)GetProcAddress(m_hLib, "NtOpenKeyTransactedEx");
-        m_pfnNtQueryKey = (PFN_NtQueryKey)GetProcAddress(m_hLib, "NtQueryKey");
-        m_pfnNtQueryObject = (PFN_NtQueryObject)GetProcAddress(m_hLib, "NtQueryObject");
-        m_pfnNtQueryValueKey = (PFN_NtQueryValueKey)GetProcAddress(m_hLib, "NtQueryValueKey");
-        m_pfnNtSetValueKey = (PFN_NtSetValueKey)GetProcAddress(m_hLib, "NtSetValueKey");
+        m_pfnNtClose = reinterpret_cast<PFN_NtClose>(GetProcAddress(m_hLib, "NtClose"));
+        m_pfnNtCreateFile = reinterpret_cast<PFN_NtCreateFile>(GetProcAddress(m_hLib, "NtCreateFile"));
+        m_pfnNtCreateKey = reinterpret_cast<PFN_NtCreateKey>(GetProcAddress(m_hLib, "NtCreateKey"));
+        m_pfnNtCreateKeyTransacted = reinterpret_cast<PFN_NtCreateKeyTransacted>(GetProcAddress(m_hLib, "NtCreateKeyTransacted"));
+        m_pfnNtDeleteKey = reinterpret_cast<PFN_NtDeleteKey>(GetProcAddress(m_hLib, "NtDeleteKey"));
+        m_pfnNtDeleteFile = reinterpret_cast<PFN_NtDeleteFile>(GetProcAddress(m_hLib, "NtDeleteFile"));
+        m_pfnNtDeleteValueKey = reinterpret_cast<PFN_NtDeleteValueKey>(GetProcAddress(m_hLib, "NtDeleteValueKey"));
+        m_pfnNtEnumerateKey = reinterpret_cast<PFN_NtEnumerateKey>(GetProcAddress(m_hLib, "NtEnumerateKey"));
+        m_pfnNtEnumerateValueKey = reinterpret_cast<PFN_NtEnumerateValueKey>(GetProcAddress(m_hLib, "NtEnumerateValueKey"));
+        m_pfnNtFlushKey = reinterpret_cast<PFN_NtFlushKey>(GetProcAddress(m_hLib, "NtFlushKey"));
+        m_pfnNtNotifyChangeKey = reinterpret_cast<PFN_NtNotifyChangeKey>(GetProcAddress(m_hLib, "NtNotifyChangeKey"));
+        m_pfnNtOpenFile = reinterpret_cast<PFN_NtOpenFile>(GetProcAddress(m_hLib, "NtOpenFile"));
+        m_pfnNtOpenKey = reinterpret_cast<PFN_NtOpenKey>(GetProcAddress(m_hLib, "NtOpenKey"));
+        m_pfnNtOpenKeyEx = reinterpret_cast<PFN_NtOpenKeyEx>(GetProcAddress(m_hLib, "NtOpenKeyEx"));
+        m_pfnNtOpenKeyTransacted = reinterpret_cast<PFN_NtOpenKeyTransacted>(GetProcAddress(m_hLib, "NtOpenKeyTransacted"));
+        m_pfnNtOpenKeyTransactedEx = reinterpret_cast<PFN_NtOpenKeyTransactedEx>(GetProcAddress(m_hLib, "NtOpenKeyTransactedEx"));
+        m_pfnNtQueryKey = reinterpret_cast<PFN_NtQueryKey>(GetProcAddress(m_hLib, "NtQueryKey"));
+        m_pfnNtQueryObject = reinterpret_cast<PFN_NtQueryObject>(GetProcAddress(m_hLib, "NtQueryObject"));
+        m_pfnNtQueryValueKey = reinterpret_cast<PFN_NtQueryValueKey>(GetProcAddress(m_hLib, "NtQueryValueKey"));
+        m_pfnNtSetValueKey = reinterpret_cast<PFN_NtSetValueKey>(GetProcAddress(m_hLib, "NtSetValueKey"));
         m_pfnRtlInitUnicodeString = reinterpret_cast<PFN_RtlInitUnicodeString>(GetProcAddress(m_hLib, "RtlInitUnicodeString"));
     }
 
@@ -120,6 +121,13 @@ namespace Nt
     ) const
     {
         return m_pfnNtDeleteKey(KeyHandle);
+    }
+
+    NTSTATUS NTAPI NtApi::NtDeleteFile(
+        _In_ POBJECT_ATTRIBUTES ObjectAttributes
+    ) const
+    {
+        return m_pfnNtDeleteFile(ObjectAttributes);
     }
 
     NTSTATUS NTAPI NtApi::NtDeleteValueKey(

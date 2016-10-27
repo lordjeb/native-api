@@ -46,6 +46,10 @@ namespace Nt
         _In_ HANDLE KeyHandle
         );
 
+    typedef NTSTATUS(NTAPI *PFN_NtDeleteFile)(
+        _In_ POBJECT_ATTRIBUTES ObjectAttributes
+        );
+    
     typedef NTSTATUS(NTAPI *PFN_NtDeleteValueKey)(
         _In_ HANDLE KeyHandle,
         _In_ PUNICODE_STRING ValueName

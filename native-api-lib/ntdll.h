@@ -71,6 +71,10 @@ namespace Nt
             _In_ HANDLE KeyHandle
         ) const;
 
+        NTSTATUS NTAPI NtDeleteFile(
+            _In_ POBJECT_ATTRIBUTES ObjectAttributes
+        ) const;
+
         NTSTATUS NTAPI NtDeleteValueKey(
             _In_ HANDLE KeyHandle,
             _In_ PUNICODE_STRING ValueName
@@ -194,6 +198,7 @@ namespace Nt
         PFN_NtCreateKey m_pfnNtCreateKey;
         PFN_NtCreateKeyTransacted m_pfnNtCreateKeyTransacted;
         PFN_NtDeleteKey m_pfnNtDeleteKey;
+        PFN_NtDeleteFile m_pfnNtDeleteFile;
         PFN_NtDeleteValueKey m_pfnNtDeleteValueKey;
         PFN_NtEnumerateKey m_pfnNtEnumerateKey;
         PFN_NtEnumerateValueKey m_pfnNtEnumerateValueKey;

@@ -26,7 +26,6 @@ namespace Nt
             }
         }
     };
-    NtApi nt_handle_traits::nt;
 
     //
     //	basic_unique_handle. Class template for a handle wrapper that allows only a single owner.
