@@ -152,6 +152,20 @@ namespace Nt
             _In_ HANDLE TransactionHandle
         ) const;
 
+        NTSTATUS NTAPI NtQueryDirectoryFile(
+            _In_ HANDLE FileHandle,
+            _In_opt_ HANDLE Event,
+            _In_opt_ PIO_APC_ROUTINE ApcRoutine,
+            _In_opt_ PVOID ApcContext,
+            _Out_ PIO_STATUS_BLOCK IoStatusBlock,
+            _Out_ PVOID FileInformation,
+            _In_ ULONG Length,
+            _In_ FILE_INFORMATION_CLASS FileInformationClass,
+            _In_ BOOLEAN ReturnSingleEntry,
+            _In_opt_ PUNICODE_STRING FileName,
+            _In_ BOOLEAN RestartScan
+        ) const;
+
         NTSTATUS NTAPI NtQueryKey(
             _In_ HANDLE KeyHandle,
             _In_ KEY_INFORMATION_CLASS KeyInformationClass,
@@ -209,6 +223,7 @@ namespace Nt
         PFN_NtOpenKeyEx m_pfnNtOpenKeyEx;
         PFN_NtOpenKeyTransacted m_pfnNtOpenKeyTransacted;
         PFN_NtOpenKeyTransactedEx m_pfnNtOpenKeyTransactedEx;
+        PFN_NtQueryDirectoryFile m_pfnNtQueryDirectoryFile;
         PFN_NtQueryKey m_pfnNtQueryKey;
         PFN_NtQueryObject m_pfnNtQueryObject;
         PFN_NtQueryValueKey m_pfnNtQueryValueKey;

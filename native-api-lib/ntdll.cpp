@@ -44,6 +44,7 @@ namespace Nt
         m_pfnNtOpenKeyEx = reinterpret_cast<PFN_NtOpenKeyEx>(GetProcAddress(m_hLib, "NtOpenKeyEx"));
         m_pfnNtOpenKeyTransacted = reinterpret_cast<PFN_NtOpenKeyTransacted>(GetProcAddress(m_hLib, "NtOpenKeyTransacted"));
         m_pfnNtOpenKeyTransactedEx = reinterpret_cast<PFN_NtOpenKeyTransactedEx>(GetProcAddress(m_hLib, "NtOpenKeyTransactedEx"));
+        m_pfnNtQueryDirectoryFile = reinterpret_cast<PFN_NtQueryDirectoryFile>(GetProcAddress(m_hLib, "NtQueryDirectoryFile"));
         m_pfnNtQueryKey = reinterpret_cast<PFN_NtQueryKey>(GetProcAddress(m_hLib, "NtQueryKey"));
         m_pfnNtQueryObject = reinterpret_cast<PFN_NtQueryObject>(GetProcAddress(m_hLib, "NtQueryObject"));
         m_pfnNtQueryValueKey = reinterpret_cast<PFN_NtQueryValueKey>(GetProcAddress(m_hLib, "NtQueryValueKey"));
@@ -236,6 +237,23 @@ namespace Nt
     ) const
     {
         return m_pfnNtOpenKeyTransactedEx ? m_pfnNtOpenKeyTransactedEx(KeyHandle, DesiredAccess, ObjectAttributes, OpenOptions, TransactionHandle) : STATUS_PROCEDURE_NOT_FOUND;
+    }
+
+    NTSTATUS NTAPI NtApi::NtQueryDirectoryFile(
+        _In_ HANDLE FileHandle,
+        _In_opt_ HANDLE Event,
+        _In_opt_ PIO_APC_ROUTINE ApcRoutine,
+        _In_opt_ PVOID ApcContext,
+        _Out_ PIO_STATUS_BLOCK IoStatusBlock,
+        _Out_ PVOID FileInformation,
+        _In_ ULONG Length,
+        _In_ FILE_INFORMATION_CLASS FileInformationClass,
+        _In_ BOOLEAN ReturnSingleEntry,
+        _In_opt_ PUNICODE_STRING FileName,
+        _In_ BOOLEAN RestartScan
+    ) const
+    {
+        return m_pfnNtQueryDirectoryFile(FileHandle, Event, ApcRoutine, ApcContext, IoStatusBlock, FileInformation, Length, FileInformationClass, ReturnSingleEntry, FileName, RestartScan);
     }
 
     NTSTATUS NTAPI NtApi::NtQueryKey(

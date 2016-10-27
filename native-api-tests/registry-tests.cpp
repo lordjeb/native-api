@@ -15,6 +15,22 @@ namespace nativeapitests
         SetEvent(*static_cast<PHANDLE>(ApcContext));
     }
 
+    struct invalid_handle_traits
+    {
+        typedef HANDLE pointer;
+
+        static auto invalid() throw() -> pointer
+        {
+            return INVALID_HANDLE_VALUE;
+        }
+
+        static auto close(pointer value) throw() -> void
+        {
+            CloseHandle(value);
+        }
+    };
+    typedef Nt::basic_unique_handle<invalid_handle_traits> unique_event_handle;
+
     TEST_CLASS(RegistryTests)
     {
     public:
@@ -118,7 +134,6 @@ namespace nativeapitests
 
             Assert::AreEqual(STATUS_NO_MORE_ENTRIES, _nt.NtEnumerateValueKey(keyHandle.get(), 1, Nt::KeyValueFullInformation, pValueFullInformation, bufferSize, &cbInformation));
 
-
             // Delete
             Assert::AreEqual(STATUS_SUCCESS, _nt.NtDeleteValueKey(keyHandle.get(), &valueName));
         }
@@ -127,16 +142,17 @@ namespace nativeapitests
         {
             Nt::unique_nt_handle keyHandle;
             Assert::AreEqual(STATUS_SUCCESS, _nt.NtOpenKey(keyHandle.get_address_of(), KEY_ALL_ACCESS, &_KeyObjectAttributes));
-            auto hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+            unique_event_handle hEvent{ CreateEvent(nullptr, TRUE, FALSE, nullptr) };
             IO_STATUS_BLOCK iosb;
-            Assert::AreEqual(STATUS_PENDING, _nt.NtNotifyChangeKey(keyHandle.get(), nullptr, static_cast<PIO_APC_ROUTINE>(SetEventApcRoutine), &hEvent, &iosb, REG_NOTIFY_CHANGE_NAME | REG_NOTIFY_CHANGE_LAST_SET, TRUE, nullptr, 0, TRUE));
+            Assert::AreEqual(STATUS_PENDING, _nt.NtNotifyChangeKey(keyHandle.get(), nullptr, static_cast<PIO_APC_ROUTINE>(SetEventApcRoutine), hEvent.get_address_of(), &iosb, REG_NOTIFY_CHANGE_NAME | REG_NOTIFY_CHANGE_LAST_SET, TRUE, nullptr, 0, TRUE));
 
+            // Create a value to trigger the change notification
             UNICODE_STRING ValueName = RTL_CONSTANT_STRING(L"TestValue");
             Assert::AreEqual(STATUS_SUCCESS, _nt.NtSetValueKey(keyHandle.get(), &ValueName, 0, REG_SZ, ValueName.Buffer, ValueName.Length + sizeof(wchar_t)));
 
             // Cause the thread to enter an alterable state so that it can call the APC routine(s)
             Assert::AreEqual(static_cast<DWORD>(WAIT_IO_COMPLETION), SleepEx(0, TRUE));
-            Assert::AreEqual(static_cast<DWORD>(WAIT_OBJECT_0), WaitForSingleObject(hEvent, INFINITE));
+            Assert::AreEqual(static_cast<DWORD>(WAIT_OBJECT_0), WaitForSingleObject(hEvent.get(), INFINITE));
             Assert::AreEqual(STATUS_NOTIFY_ENUM_DIR, iosb.Status);
         }
     };

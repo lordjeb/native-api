@@ -40,9 +40,28 @@ namespace nativeapitests
             Assert::AreEqual(STATUS_SUCCESS, _nt.NtDeleteFile(&_DirectoryObjectAttributes));
         }
 
-        TEST_METHOD(Test)
+        TEST_METHOD(FileOperations)
         {
-            Assert::IsTrue(true);
+            auto filename = _directoryName + L"\\file.txt";
+            UNICODE_STRING FileName;
+            OBJECT_ATTRIBUTES FileObjectAttributes;
+
+            _nt.RtlInitUnicodeString(&FileName, filename.c_str());
+            InitializeObjectAttributes(&FileObjectAttributes, &FileName, OBJ_CASE_INSENSITIVE, nullptr, nullptr);
+
+            Nt::unique_nt_handle fileHandle;
+            IO_STATUS_BLOCK iosb;
+            Assert::AreEqual(STATUS_SUCCESS, _nt.NtCreateFile(fileHandle.get_address_of(), FILE_ALL_ACCESS, &FileObjectAttributes, &iosb, 0, 0, 0, FILE_CREATE, FILE_DELETE_ON_CLOSE, nullptr, 0));
+
+            Nt::unique_nt_handle dirHandle;
+            Assert::AreEqual(STATUS_SUCCESS, _nt.NtCreateFile(dirHandle.get_address_of(), FILE_LIST_DIRECTORY | SYNCHRONIZE, &_DirectoryObjectAttributes, &iosb, 0, FILE_ATTRIBUTE_DIRECTORY, 0, FILE_OPEN, FILE_SYNCHRONOUS_IO_NONALERT | FILE_DIRECTORY_FILE, nullptr, 0));
+
+            unsigned long bufferSize = 256;
+            std::vector<BYTE> fileInformationBuffer(bufferSize);
+            auto pValueFullInformation = reinterpret_cast<Nt::FILE_NAMES_INFORMATION*>(&fileInformationBuffer[0]);
+            Assert::AreEqual(STATUS_SUCCESS, _nt.NtQueryDirectoryFile(dirHandle.get(), nullptr, nullptr, nullptr, &iosb, pValueFullInformation, bufferSize, Nt::FileNamesInformation, TRUE, nullptr, TRUE));
+            std::wstring queriedFilename(pValueFullInformation->FileName, pValueFullInformation->FileNameLength);
+            Assert::AreEqual(L".", queriedFilename.c_str());
         }
     };
 
