@@ -1,9 +1,11 @@
 #include "CppUnitTest.h"
 #include <stdio.h>
 #include <Windows.h>
+#include <lmcons.h>
 #include <sddl.h>
 #include "ntdll.h"
 #include "handle.hpp"
+#include <memory>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -18,65 +20,40 @@ namespace nativeapitests
     {
     public:
         static Nt::NtApi _nt;
-        static wchar_t _username[MAX_PATH + 1];
-        static wchar_t _userSid[MAX_PATH + 1];
-        wchar_t _keyName[MAX_PATH];
+        static std::wstring _userSid;
+        std::wstring _keyName;
         UNICODE_STRING _KeyName;
         OBJECT_ATTRIBUTES _KeyObjectAttributes;
 
         TEST_CLASS_INITIALIZE(SetUp)
         {
-            DWORD cchUsername = _countof(_username);
+            // Get the username and SID so we can get a name for registry areas that we have rights to...
+            //
+
+            wchar_t username[UNLEN + 1];
+            DWORD cchUsername = _countof(username);
+            Assert::AreNotEqual(FALSE, GetUserName(username, &cchUsername));
+
             SID_NAME_USE sidNameUse;
-            PSID pSidBuffer = nullptr;
             DWORD cbSidBuffer = 0;
-            wchar_t* pReferencedDomainName = nullptr;
             DWORD cchReferencedDomainName = 0;
-            wchar_t* pStringSid = nullptr;
+            Assert::AreEqual(FALSE, LookupAccountName(nullptr, username, nullptr, &cbSidBuffer, nullptr, &cchReferencedDomainName, &sidNameUse));
+            Assert::AreEqual(122UL, GetLastError());
 
-            __try
-            {
-                // Get the username and SID so we can get access to registry areas that we have rights to...
-                Assert::AreNotEqual(FALSE, GetUserName(_username, &cchUsername));
+            std::vector<BYTE> sidBuffer(cbSidBuffer);
+            std::vector<wchar_t> referencedDomainName(cchReferencedDomainName);
+            Assert::AreNotEqual(FALSE, LookupAccountName(nullptr, username, &sidBuffer[0], &cbSidBuffer, &referencedDomainName[0], &cchReferencedDomainName, &sidNameUse));
 
-                Assert::AreEqual(FALSE, LookupAccountName(nullptr, _username, nullptr, &cbSidBuffer, nullptr, &cchReferencedDomainName, &sidNameUse));
-                Assert::AreEqual(122UL, GetLastError());
-
-                pSidBuffer = new BYTE[ cbSidBuffer ];
-                Assert::IsNotNull(pSidBuffer);
-
-                pReferencedDomainName = new wchar_t[ cchReferencedDomainName ];
-                Assert::IsNotNull(pReferencedDomainName);
-
-                Assert::AreNotEqual(FALSE, LookupAccountName(nullptr, _username, pSidBuffer, &cbSidBuffer, pReferencedDomainName, &cchReferencedDomainName, &sidNameUse));
-
-                Assert::AreNotEqual(FALSE, ConvertSidToStringSid(pSidBuffer, &pStringSid));
-
-                wcscpy_s(_userSid, pStringSid);
-            }
-            __finally
-            {
-                if (pStringSid)
-                {
-                    LocalFree(pStringSid);
-                }
-
-                if (pReferencedDomainName)
-                {
-                    delete[] pReferencedDomainName;
-                }
-
-                if (pSidBuffer)
-                {
-                    delete[] pSidBuffer;
-                }
-            }
+            wchar_t* pStringSid;
+            Assert::AreNotEqual(FALSE, ConvertSidToStringSid(&sidBuffer[0], &pStringSid));
+            _userSid = pStringSid;
+            LocalFree(pStringSid);
         }
 
         TEST_METHOD_INITIALIZE(TestMethodSetUp)
         {
-            swprintf_s(_keyName, L"\\REGISTRY\\USER\\%s\\Software\\NativeApiLibTests", _userSid);
-            _nt.RtlInitUnicodeString(&_KeyName, _keyName);
+            _keyName = L"\\REGISTRY\\USER\\" + _userSid + L"\\Software\\NativeApiLibTests";
+            _nt.RtlInitUnicodeString(&_KeyName, _keyName.c_str());
             InitializeObjectAttributes(&_KeyObjectAttributes, &_KeyName, OBJ_CASE_INSENSITIVE, nullptr, nullptr);
             ULONG ulDisposition;
             Nt::unique_nt_handle keyHandle;
@@ -114,6 +91,36 @@ namespace nativeapitests
             Assert::AreEqual(STATUS_ACCESS_DENIED, _nt.NtOpenKeyEx(keyHandle.get_address_of(), KEY_READ, &_KeyObjectAttributes, REG_OPTION_BACKUP_RESTORE));
         }
 
+        TEST_METHOD(RegistryValueOperations)
+        {
+            unsigned long bufferSize = 256;
+
+            Nt::unique_nt_handle keyHandle;
+            Assert::AreEqual(STATUS_SUCCESS, _nt.NtOpenKey(keyHandle.get_address_of(), KEY_ALL_ACCESS, &_KeyObjectAttributes));
+
+            // Set
+            UNICODE_STRING valueName = RTL_CONSTANT_STRING(L"TestValue");
+            ULONG valueData = 42;
+            Assert::AreEqual(STATUS_SUCCESS, _nt.NtSetValueKey(keyHandle.get(), &valueName, 0, REG_DWORD, &valueData, sizeof(valueData)));
+
+            // Query
+            std::vector<BYTE> valueInformationBuffer(bufferSize);
+            auto pValueFullInformation = reinterpret_cast<Nt::KEY_VALUE_FULL_INFORMATION*>(&valueInformationBuffer[0]);
+            ULONG cbInformation;
+            Assert::AreEqual(STATUS_SUCCESS, _nt.NtQueryValueKey(keyHandle.get(), &valueName, Nt::KeyValueFullInformation, pValueFullInformation, bufferSize, &cbInformation));
+            Assert::AreEqual(ULONG(REG_DWORD), pValueFullInformation->Type);
+
+            // Enum
+            Assert::AreEqual(STATUS_SUCCESS, _nt.NtEnumerateValueKey(keyHandle.get(), 0, Nt::KeyValueFullInformation, pValueFullInformation, bufferSize, &cbInformation));
+            Assert::AreEqual(ULONG(REG_DWORD), pValueFullInformation->Type);
+
+            Assert::AreEqual(STATUS_NO_MORE_ENTRIES, _nt.NtEnumerateValueKey(keyHandle.get(), 1, Nt::KeyValueFullInformation, pValueFullInformation, bufferSize, &cbInformation));
+
+
+            // Delete
+            Assert::AreEqual(STATUS_SUCCESS, _nt.NtDeleteValueKey(keyHandle.get(), &valueName));
+        }
+
         TEST_METHOD(NotifyTester)
         {
             Nt::unique_nt_handle keyHandle;
@@ -133,6 +140,5 @@ namespace nativeapitests
     };
 
     Nt::NtApi RegistryTests::_nt;
-    wchar_t RegistryTests::_username[MAX_PATH + 1] = { 0 };
-    wchar_t RegistryTests::_userSid[MAX_PATH + 1] = { 0 };
+    std::wstring RegistryTests::_userSid;
 }
