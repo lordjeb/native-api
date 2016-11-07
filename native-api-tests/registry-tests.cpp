@@ -1,5 +1,4 @@
 #include "CppUnitTest.h"
-#include <stdio.h>
 #include <Windows.h>
 #include <lmcons.h>
 #include <sddl.h>
@@ -154,6 +153,31 @@ namespace nativeapitests
             Assert::AreEqual(static_cast<DWORD>(WAIT_IO_COMPLETION), SleepEx(0, TRUE));
             Assert::AreEqual(static_cast<DWORD>(WAIT_OBJECT_0), WaitForSingleObject(hEvent.get(), INFINITE));
             Assert::AreEqual(STATUS_NOTIFY_ENUM_DIR, iosb.Status);
+        }
+
+        TEST_METHOD(EnumerateRoot)
+        {
+            Nt::unique_nt_handle keyHandle;
+            UNICODE_STRING KeyName = RTL_CONSTANT_STRING(L"\\REGISTRY\\USER");
+            OBJECT_ATTRIBUTES KeyObjectAttributes = RTL_CONSTANT_OBJECT_ATTRIBUTES(nullptr, &KeyName, OBJ_CASE_INSENSITIVE);
+            Assert::AreEqual(STATUS_SUCCESS, _nt.NtOpenKey(keyHandle.get_address_of(), GENERIC_READ, &KeyObjectAttributes));
+
+            OutputDebugString(L"Keys:\n");
+
+            unsigned long bufferSize = 256;
+            std::vector<BYTE> keyInformationBuffer(bufferSize);
+            auto pKeyBasicInformation = reinterpret_cast<Nt::KEY_BASIC_INFORMATION*>(&keyInformationBuffer[0]);
+            ULONG cbInformation;
+            ULONG keyIndex = 0;
+            auto status = _nt.NtEnumerateKey(keyHandle.get(), keyIndex++, Nt::KeyBasicInformation, pKeyBasicInformation, bufferSize, &cbInformation);
+            while (status == STATUS_SUCCESS)
+            {
+                std::wstring keyname(pKeyBasicInformation->Name, pKeyBasicInformation->NameLength / sizeof(wchar_t));
+                keyname += L"\n";
+                OutputDebugString(keyname.c_str());
+                status = _nt.NtEnumerateKey(keyHandle.get(), keyIndex++, Nt::KeyBasicInformation, pKeyBasicInformation, bufferSize, &cbInformation);
+            }
+            Assert::AreEqual(STATUS_NO_MORE_ENTRIES, status);
         }
     };
 

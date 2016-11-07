@@ -320,4 +320,43 @@ namespace Nt
         ObjectAllInformation,
         ObjectDataInformation
     } OBJECT_INFORMATION_CLASS, *POBJECT_INFORMATION_CLASS;
+
+    typedef struct _WNF_STATE_NAME {
+        ULONG Data[2];
+    } WNF_STATE_NAME, *PWNF_STATE_NAME;
+
+    typedef const PWNF_STATE_NAME PCWNF_STATE_NAME;
+
+    typedef enum _WNF_STATE_NAME_LIFETIME
+    {
+        WnfWellKnownStateName,
+        WnfPermanentStateName,
+        WnfPersistentStateName,
+        WnfTemporaryStateName
+    } WNF_STATE_NAME_LIFETIME;
+
+    typedef enum _WNF_STATE_NAME_INFORMATION
+    {
+        WnfInfoStateNameExist,
+        WnfInfoSubscribersPresent,
+        WnfInfoIsQuiescent
+    } WNF_STATE_NAME_INFORMATION;
+
+    typedef enum _WNF_DATA_SCOPE
+    {
+        WnfDataScopeSystem,
+        WnfDataScopeSession,
+        WnfDataScopeUser,
+        WnfDataScopeProcess
+    } WNF_DATA_SCOPE;
+
+    typedef struct _WNF_TYPE_ID
+    {
+        GUID TypeId;
+    } WNF_TYPE_ID, *PWNF_TYPE_ID;
+
+    typedef const WNF_TYPE_ID *PCWNF_TYPE_ID;
+
+    // rev
+    typedef ULONG WNF_CHANGE_STAMP, *PWNF_CHANGE_STAMP;
 }

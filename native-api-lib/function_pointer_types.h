@@ -1,6 +1,5 @@
 #pragma once
 
-
 namespace Nt
 {
     typedef NTSTATUS(NTAPI *PFN_NtClose)(
@@ -42,6 +41,16 @@ namespace Nt
         _Out_opt_ PULONG Disposition
         );
 
+    typedef NTSTATUS(NTAPI *PFN_NtCreateWnfStateName)(
+        _Out_ PWNF_STATE_NAME StateName,
+        _In_ WNF_STATE_NAME_LIFETIME NameLifetime,
+        _In_ WNF_DATA_SCOPE DataScope,
+        _In_ BOOLEAN PersistData,
+        _In_opt_ PCWNF_TYPE_ID TypeId,
+        _In_ ULONG MaximumStateSize,
+        _In_ PSECURITY_DESCRIPTOR SecurityDescriptor
+        );
+
     typedef NTSTATUS(NTAPI *PFN_NtDeleteKey)(
         _In_ HANDLE KeyHandle
         );
@@ -53,6 +62,10 @@ namespace Nt
     typedef NTSTATUS(NTAPI *PFN_NtDeleteValueKey)(
         _In_ HANDLE KeyHandle,
         _In_ PUNICODE_STRING ValueName
+        );
+
+    typedef NTSTATUS(NTAPI* PFN_NtDeleteWnfStateName)(
+        _In_ PCWNF_STATE_NAME StateName
         );
 
     typedef NTSTATUS(NTAPI *PFN_NtEnumerateKey)(

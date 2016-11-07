@@ -1,9 +1,6 @@
 #include "CppUnitTest.h"
-#include <stdio.h>
 #include <Windows.h>
-#include <lmcons.h>
 #include <ShlObj.h>
-#include <sddl.h>
 #include "ntdll.h"
 #include "handle.hpp"
 
@@ -60,7 +57,7 @@ namespace nativeapitests
             std::vector<BYTE> fileInformationBuffer(bufferSize);
             auto pValueFullInformation = reinterpret_cast<Nt::FILE_NAMES_INFORMATION*>(&fileInformationBuffer[0]);
             Assert::AreEqual(STATUS_SUCCESS, _nt.NtQueryDirectoryFile(dirHandle.get(), nullptr, nullptr, nullptr, &iosb, pValueFullInformation, bufferSize, Nt::FileNamesInformation, TRUE, nullptr, TRUE));
-            std::wstring queriedFilename(pValueFullInformation->FileName, pValueFullInformation->FileNameLength);
+            std::wstring queriedFilename(pValueFullInformation->FileName, pValueFullInformation->FileNameLength / sizeof(wchar_t));
             Assert::AreEqual(L".", queriedFilename.c_str());
         }
     };

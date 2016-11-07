@@ -67,6 +67,16 @@ namespace Nt
             _Out_opt_ PULONG Disposition
         ) const;
 
+        NTSTATUS NTAPI NtCreateWnfStateName(
+            _Out_ PWNF_STATE_NAME StateName,
+            _In_ WNF_STATE_NAME_LIFETIME NameLifetime,
+            _In_ WNF_DATA_SCOPE DataScope,
+            _In_ BOOLEAN PersistData,
+            _In_opt_ PCWNF_TYPE_ID TypeId,
+            _In_ ULONG MaximumStateSize,
+            _In_ PSECURITY_DESCRIPTOR SecurityDescriptor
+        ) const;
+
         NTSTATUS NTAPI NtDeleteKey(
             _In_ HANDLE KeyHandle
         ) const;
@@ -78,6 +88,10 @@ namespace Nt
         NTSTATUS NTAPI NtDeleteValueKey(
             _In_ HANDLE KeyHandle,
             _In_ PUNICODE_STRING ValueName
+        ) const;
+
+        NTSTATUS NTAPI NtDeleteWnfStateName(
+            _In_ PCWNF_STATE_NAME StateName
         ) const;
 
         NTSTATUS NTAPI NtEnumerateKey(
@@ -205,15 +219,30 @@ namespace Nt
             _In_ PCWSTR SourceString
         ) const;
 
+
+
+        // NtNotifyChangeDirectoryFile
+        // NtNotifyChangeMultipleKeys
+        // NtQueryInformationFile
+        // NtReadFile
+        // NtWriteFile
+        // NtRenameKey
+        // NtSetInformationFile
+        // NtSetInformationKey
+
+
+
     private:
         HMODULE m_hLib;
         PFN_NtClose m_pfnNtClose;
         PFN_NtCreateFile m_pfnNtCreateFile;
         PFN_NtCreateKey m_pfnNtCreateKey;
         PFN_NtCreateKeyTransacted m_pfnNtCreateKeyTransacted;
+        PFN_NtCreateWnfStateName m_pfnNtCreateWnfStateName;
         PFN_NtDeleteKey m_pfnNtDeleteKey;
         PFN_NtDeleteFile m_pfnNtDeleteFile;
         PFN_NtDeleteValueKey m_pfnNtDeleteValueKey;
+        PFN_NtDeleteWnfStateName m_pfnNtDeleteWnfStateName;
         PFN_NtEnumerateKey m_pfnNtEnumerateKey;
         PFN_NtEnumerateValueKey m_pfnNtEnumerateValueKey;
         PFN_NtFlushKey m_pfnNtFlushKey;

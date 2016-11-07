@@ -10,8 +10,10 @@ namespace Nt
         m_pfnNtCreateFile{ nullptr },
         m_pfnNtCreateKey{ nullptr },
         m_pfnNtCreateKeyTransacted{ nullptr },
+        m_pfnNtCreateWnfStateName{ nullptr },
         m_pfnNtDeleteKey{ nullptr },
         m_pfnNtDeleteValueKey{ nullptr },
+        m_pfnNtDeleteWnfStateName{ nullptr },
         m_pfnNtEnumerateKey{ nullptr },
         m_pfnNtEnumerateValueKey{ nullptr },
         m_pfnNtFlushKey{ nullptr },
@@ -32,9 +34,11 @@ namespace Nt
         m_pfnNtCreateFile = reinterpret_cast<PFN_NtCreateFile>(GetProcAddress(m_hLib, "NtCreateFile"));
         m_pfnNtCreateKey = reinterpret_cast<PFN_NtCreateKey>(GetProcAddress(m_hLib, "NtCreateKey"));
         m_pfnNtCreateKeyTransacted = reinterpret_cast<PFN_NtCreateKeyTransacted>(GetProcAddress(m_hLib, "NtCreateKeyTransacted"));
+        m_pfnNtCreateWnfStateName = reinterpret_cast<PFN_NtCreateWnfStateName>(GetProcAddress(m_hLib, "NtCreateWnfStateName"));
         m_pfnNtDeleteKey = reinterpret_cast<PFN_NtDeleteKey>(GetProcAddress(m_hLib, "NtDeleteKey"));
         m_pfnNtDeleteFile = reinterpret_cast<PFN_NtDeleteFile>(GetProcAddress(m_hLib, "NtDeleteFile"));
         m_pfnNtDeleteValueKey = reinterpret_cast<PFN_NtDeleteValueKey>(GetProcAddress(m_hLib, "NtDeleteValueKey"));
+        m_pfnNtDeleteWnfStateName = reinterpret_cast<PFN_NtDeleteWnfStateName>(GetProcAddress(m_hLib, "NtDeleteWnfStateName"));
         m_pfnNtEnumerateKey = reinterpret_cast<PFN_NtEnumerateKey>(GetProcAddress(m_hLib, "NtEnumerateKey"));
         m_pfnNtEnumerateValueKey = reinterpret_cast<PFN_NtEnumerateValueKey>(GetProcAddress(m_hLib, "NtEnumerateValueKey"));
         m_pfnNtFlushKey = reinterpret_cast<PFN_NtFlushKey>(GetProcAddress(m_hLib, "NtFlushKey"));
@@ -117,6 +121,19 @@ namespace Nt
         return m_pfnNtCreateKeyTransacted ? m_pfnNtCreateKeyTransacted(KeyHandle, DesiredAccess, ObjectAttributes, TitleIndex, Class, CreateOptions, TransactionHandle, Disposition) : STATUS_PROCEDURE_NOT_FOUND;
     }
 
+    NTSTATUS NTAPI NtApi::NtCreateWnfStateName(
+        _Out_ PWNF_STATE_NAME StateName,
+        _In_ WNF_STATE_NAME_LIFETIME NameLifetime,
+        _In_ WNF_DATA_SCOPE DataScope,
+        _In_ BOOLEAN PersistData,
+        _In_opt_ PCWNF_TYPE_ID TypeId,
+        _In_ ULONG MaximumStateSize,
+        _In_ PSECURITY_DESCRIPTOR SecurityDescriptor
+    ) const
+    {
+        return m_pfnNtCreateWnfStateName(StateName, NameLifetime, DataScope, PersistData, TypeId, MaximumStateSize, SecurityDescriptor);
+    }
+
     NTSTATUS NTAPI NtApi::NtDeleteKey(
         _In_ HANDLE KeyHandle
     ) const
@@ -137,6 +154,13 @@ namespace Nt
     ) const
     {
         return m_pfnNtDeleteValueKey(KeyHandle, ValueName);
+    }
+
+    NTSTATUS NTAPI NtApi::NtDeleteWnfStateName(
+        _In_ PCWNF_STATE_NAME StateName
+    ) const
+    {
+        return m_pfnNtDeleteWnfStateName(StateName);
     }
 
     NTSTATUS NTAPI NtApi::NtEnumerateKey(
